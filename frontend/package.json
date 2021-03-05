@@ -1,0 +1,39 @@
+{
+  "name": "electron-quick-start",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "win64": "electron-packager . myApp --platform=win32 --arch=x64",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.gresppro.app"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^7.1.4",
+    "electron-builder": "^22.9.1"
+  },
+  "dependencies": {
+    "axios": "^0.20.0",
+    "boostrap": "^2.0.0",
+    "bootstrap": "^4.5.2",
+    "date-fns": "^2.15.0",
+    "highcharts": "^8.2.0",
+    "jquery": "^3.5.1",
+    "mousetrap": "^1.6.5",
+    "popper.js": "^1.16.1",
+    "socket.io": "^2.3.0"
+  }
+}

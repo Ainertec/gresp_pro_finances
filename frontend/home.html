@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="fontawesome-free/css/all.css" rel="stylesheet">
+  <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <title>Gresp Pro</title>
+  <link rel="stylesheet" type="text/css" href="./bootstrap/css/escopo-css-pagina.css">
+</head>
+
+<body>
+
+  <div
+    style="position: absolute; z-index:1060; top: 0; right: 0; min-height: 200px; margin-right: 20px; margin-top: 60px;">
+    <div id="mensagemDeErro"></div>
+    <div id="alertStock"></div>
+  </div>
+  <div id="carregamento"></div>
+
+  <nav id="navbarTotal" class="navbar navCor shadow-lg p-2 mb-2"
+    style="padding-right: 2px; border-radius: 20px; margin: 5px;">
+    <img src="img/logo.png" class="navbar-brand" style="width: 80px;" alt="...">
+    <ul class="nav justify-content-end">
+      <li class="nav-item" id="statusLogin" style="margin-right: 15px;"></li>
+    </ul>
+  </nav>
+
+  <div id="janelaTotal" class="container-fluid">
+    <div id="modal"></div>
+    <div id="modal2"></div>
+    <div id="alert2"></div>
+
+    <div class="row">
+
+      <section class="col-3 bg.bg-transparent"
+        style="height: 80vh; border-top-right-radius: 10px; border-bottom-right-radius: 10px; padding: 0px;">
+        <h5 class="text-center" style="margin-top: 15px;">Buscar</h5>
+        <div class="col-12 layer1" style="position: relative; height: 74vh; z-index: 1; overflow: scroll; margin: 0px;">
+          <div class="shadow-lg p-2 mb-5 bg-white rounded">
+            <div class="col-12 mx-auto row" style="margin-top:20px;">
+                <label for="dataInicial">Inicio</label>
+                <input id="dataInicial" type="date" class="form-control form-control-sm" value="${new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate()}">
+                <label for="dataFinal">Final</label>
+                <input id="dataFinal" type="date" class="form-control form-control-sm" value="${new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate()}">
+            </div>
+            <div class="col-12 mx-auto" style="margin-top:20px;">
+                <button onclick="chamadaDeMetodosRelatorio();" class="btn btn-info btn-block btn-sm" style="margin-bottom:40px;">
+                    <span class="fas fa-search"></span> Buscar
+                </button>
+                <button onclick="imprimirRelatorioProdutoeOrders();" class="btn btn-warning btn-block btn-sm">
+                    <span class="fas fa-print"></span> Imprimir Relatório
+                </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main class="col-9" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">
+        <div class="col-12 layer1"
+          style="position: relative; height: 83vh; z-index: 1; overflow: scroll; margin-right: 0px;">
+
+            <div id="listaDadosGerais" style="margin-top:5vh" class="col-12 rounded mx-auto d-block"></div>
+            <div id="listaItens" style="margin-top:5vh" class="col-12 rounded mx-auto d-block"></div>
+            
+            <div class="shadow-lg p-2 mb-5 bg-white rounded row" style="margin-top:5vh">
+              <div class="col-12 mx-auto" style="margin-top:20px;">
+                <h5>Adicionar dispesas</h5>
+              </div>
+              <div class="col-6 mx-auto" style="margin-top:20px;">
+                  <label for="indetificadorDispesa">Identificação:</label>
+                  <input id="indetificadorDispesa" type="text" class="form-control form-control-sm">
+              </div>
+              <div class="col-6 mx-auto" style="margin-top:20px;">
+                <label for="valorDispesa">Valor: R$</label>
+                <input id="valorDispesa" type="number" class="form-control form-control-sm">
+              </div>
+              <div class="col-6 mx-auto" style="margin-top:20px;">
+                  <button onclick="adicionarDispesaAoPedido(document.getElementById('indetificadorDispesa').value, document.getElementById('valorDispesa').value);" class="btn btn-info btn-block btn-sm" style="margin-bottom:40px;">
+                      <span class="fas fa-search"></span> Buscar
+                  </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+
+    </div>
+
+
+    <hr class="my-6 bg-dark" style="margin-bottom: 5px;">
+
+    <footer>
+      <a class="nav-link text-dark rounded float-right" href="#" style="padding: 0px;"><span
+          class="fab fa-dev iconsTam rounded float-right"> Ainertec</span></a>
+    </footer>
+
+
+  </div>
+
+  <script src="./classes/Funcionalidade.js"></script>
+  <script src="./classes/Login.js"></script>
+  <script src="./classes/Requisicao.js"></script>
+  <script src="./classes/Relatorio.js"></script>
+
+</body>
+
+</html>

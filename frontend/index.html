@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="fontawesome-free/css/all.css" rel="stylesheet">
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <title>Gresp Pro Finances</title>
+  <style>
+    body {
+      background-color: #000;
+    }
+
+    .iconsTam {
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+
+    <img src="img/logo.png" class="rounded mx-auto d-block" style="width: 150px; margin-top: 43vh;" alt="...">
+
+    <div class="d-flex justify-content-center" style="margin-top: 30px;">
+      <div class="spinner-border text-light" role="status"><span class="fas fa-spinner"></span></div>
+    </div>
+    <div id="mensagemDeErro" style="margin-top:50px;" class="text-center"></div>
+  </div>
+
+
+  <script src="./classes/Funcionalidade.js"></script>
+  <script src="./classes/Requisicao.js"></script>
+
+  <script>
+    function mensagemDeErro(msg) {
+      document.getElementById('mensagemDeErro').innerHTML = '<span class="badge badge-danger h5">' + msg + '</span>'
+    };
+  </script>
+  <script>
+    setTimeout(function(){window.location.href="./home.html"},3000)
+  </script>
+
+
+</body>
+
+</html>
