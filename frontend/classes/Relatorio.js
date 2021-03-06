@@ -6,11 +6,61 @@ let TODASASORDERS = [];
 let TODASASINFORMACOES = {};
 let ORDERSSELECIONADOS = [];
 
+//funcao responsavel por fazer a ligação necessaria com a tela de relatorio de caixa
+function ligacaoRelatorioCaixaFacede() {
+    const situacao = autenticacaoLogin()
+
+    if (JSON.parse(situacao).tipo == 'Administrador') {
+        telaRelatorioDeCaixa();
+    } else {
+        mensagemDeErro('Usuário não autorizado!')
+    }
+}
+
+//funcao responsavel por selecionar todos os pedidos para adicionar dispesa
+function adicionarDispesaTodososPedidos(adicionar){
+    for (const iterator of TODASASORDERS) {
+        document.getElementById(`selecionarOrder${iterator.order._id}`).checked = adicionar;
+    }
+
+    for (const iterator of TODASASORDERS) {
+        adicionarRemoverItemSelecionado(adicionar, iterator.order._id,0);
+    }
+}
+
+//funcao responsavel por gerar o modal de porcetagem de peso sobre dispesa
+function modalPorcentagemPesoDispesa(identificador){
+    let codigoHTML=`<div class="modal" id="modalPorcentagemDispesa">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><span class="fas fa-user-shield"></span> Adicionar Peso ao Pedido</h5>
+                    <button type="button" class="close btn-outline-danger" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h5>Porcentagem Disponível: ${PORCENTAGEMGLOBAL}%</h5>
+                    <input id="porcentagemDispesaPeso" type="number" class="form-control mb-2">
+                    <button onclick="if(document.getElementById('porcentagemDispesaPeso').value<=${PORCENTAGEMGLOBAL}){adicionarRemoverItemSelecionado(true,'${identificador}',document.getElementById('porcentagemDispesaPeso').value) }" type="button" data-dismiss="modal" class="btn btn-primary border border-dark col-md-3">
+                        <span class="fas fa-key"></span> Proximo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>`
+
+    document.getElementById('modal').innerHTML = codigoHTML;
+    $('#modalPorcentagemDispesa').modal('show')
+}
 
 //function adicionar ou remover item selecionado
-function adicionarRemoverItemSelecionado(adicionar,identificador){
+function adicionarRemoverItemSelecionado(adicionar,identificador,porcentagem){
     console.log(adicionar,identificador)
-    adicionar? ORDERSSELECIONADOS.push({_id:identificador,dispesas:[]}):removerOrdemSelecionado(identificador)
+
+    porcentagem? PORCENTAGEMGLOBAL=PORCENTAGEMGLOBAL-porcentagem:null
+
+    adicionar? ORDERSSELECIONADOS.push({_id:identificador,percent:porcentagem? porcentagem:0}):removerOrdemSelecionado(identificador)
 
     function removerOrdemSelecionado (identificador){
         let aux =[];
@@ -27,39 +77,96 @@ function adicionarRemoverItemSelecionado(adicionar,identificador){
 
 //funcao responsavel por adicionar uma dispesa ao pedido
 function adicionarDispesaAoPedido(identificador,value){
-    const valorDividido = value/ORDERSSELECIONADOS.length;
 
+    let countPercentOrders = 0;
     for (const iterator of ORDERSSELECIONADOS) {
-        iterator.dispesas.push({identification:identificador, value:valorDividido});
+        iterator.percent==0? countPercentOrders++:null
+    }
+    for (const iterator of ORDERSSELECIONADOS) {
+        iterator.percent==0? iterator.percent=PORCENTAGEMGLOBAL/countPercentOrders:null;
     }
 
-    for (const iterator of ORDERSSELECIONADOS) {
-        console.log(iterator);
+    for (const iterator of TODASASORDERS) {
+        !iterator.order.dispesas? iterator.order.dispesas=[]:null
+
+        for (const iterator2 of ORDERSSELECIONADOS) {
+            if(iterator.order._id == iterator2._id){
+                iterator.order.dispesas.push({identification:identificador, value:value*iterator2.percent/100, percent:iterator2.percent});
+            }
+        }
+    }
+
+    for (const iterator of TODASASORDERS) {
+        console.log(iterator.order);
     }
     exibirDispesas();
+    zerarCheckeds();
+    calcularLucroGeral();
+    calcularCustoGeral();
+}
+
+//function para zerar todos os checkeds
+function zerarCheckeds(){
+    PORCENTAGEMGLOBAL=100;
+    document.getElementById(`selecionarOrderTodos`).checked = false;
+    for (const iterator of ORDERSSELECIONADOS) {
+        document.getElementById(`selecionarOrder${iterator._id}`).checked = false;
+    }
+    ORDERSSELECIONADOS=[];
 }
 
 //funcao responsavel por exibir as dispesas
 function exibirDispesas(){
-    for (const iterator of ORDERSSELECIONADOS) {
-        let codigoHTML = ``
-        for (const iterator2 of iterator.dispesas) {
-            codigoHTML+=`<p style="color:'#fff'">${iterator2.identification} - ${iterator2.value}</p>`
+    for (const iterator of TODASASORDERS) {
+        let codigoHTML = `<table class="table table-sm table-warning">`
+        let costTotalExtra = 0;
+        for (const iterator2 of iterator.order.dispesas) {
+            costTotalExtra+=iterator2.value;
+            codigoHTML+=`<tr>
+                            <td><small><strong>Referencia: ${iterator2.identification}</strong></small></td>
+                            <td class="text-danger"><small><strong>Valor: R$ ${(iterator2.value).toFixed(2)}</strong></small></td>
+                        </tr>`
         }
-        document.getElementById(`adddespesas${iterator._id}`).innerHTML = codigoHTML;
+        let lucroUnitario = iterator.order.total+(iterator.order.tip? iterator.order.tip:0)-iterator.costTotal-(iterator.order.cardfee? iterator.order.cardfee:0)-costTotalExtra
+        
+
+        codigoHTML+=`<tr class="table-info">
+                    <td><small><strong>Total dispesas extras</strong></small></td>
+                    <td class="text-danger"><small><strong>Valor: R$ ${(costTotalExtra).toFixed(2)}</strong></small></td>
+                </tr>
+                <tr class="table-info">
+                    <td><small><strong>Total gasto com pedido</strong></small></td>
+                    <td class="text-danger"><small><strong>Valor: R$ ${(iterator.costTotal+(iterator.order.cardfee? iterator.order.cardfee:0)+costTotalExtra).toFixed(2)}</strong></small></td>
+                </tr>
+                <tr class="table-info">
+                    <td><small><strong>Lucro do pedido</strong></small></td>
+                    <td class="text-danger"><small><strong>Valor: R$ ${(lucroUnitario).toFixed(2)}</strong></small></td>
+                </tr>
+            </table>`
+        document.getElementById(`adddespesas${iterator.order._id}`).innerHTML = codigoHTML;
     }
 }
 
-
-//funcao responsavel por fazer a ligação necessaria com a tela de relatorio de caixa
-function ligacaoRelatorioCaixaFacede() {
-    const situacao = autenticacaoLogin()
-
-    if (JSON.parse(situacao).tipo == 'Administrador') {
-        telaRelatorioDeCaixa();
-    } else {
-        mensagemDeErro('Usuário não autorizado!')
+//funcao responsavel por calcular o lucro geral
+function calcularLucroGeral(){
+    let costExtras = 0;
+    for (const iterator of TODASASORDERS) {
+        for (const iterator2 of iterator.order.dispesas) {
+            costExtras+=iterator2.value;
+        }
     }
+    document.getElementById('valorTotalLucroGeral').innerHTML = `R$ ${(TODASASINFORMACOES.netValue - costExtras).toFixed(2)}`;
+}
+
+//funcao resṕonsavel por calcular o custo geral
+function calcularCustoGeral(){
+    let costExtras = 0;
+    for (const iterator of TODASASORDERS) {
+        for (const iterator2 of iterator.order.dispesas) {
+            costExtras+=iterator2.value;
+        }
+    }
+    document.getElementById('valorTotalCustoGeral').innerHTML = `R$ ${(parseFloat(TODASASINFORMACOES.totalCost) + costExtras).toFixed(2)}`;
 }
 
 //funcao responsavel por chamar os metodos da classe relatorio
@@ -92,7 +199,12 @@ async function tabelaDeRelatorioCaixa() {
                         <td scope="col"><small>Taxa Cartão</small></td>
                         <td scope="col"><small>serviço/gorjeta</small></td>
                         <td scope="col"><small>Valor</small></td>
-                        <td scope="col"><small>#</small></td>
+                        <td scope="col"><small>
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" onclick="adicionarDispesaTodososPedidos(this.checked)" class="custom-control-input custom-switch" id="selecionarOrderTodos">
+                                <label class="custom-control-label" for="selecionarOrderTodos">Todos</label>
+                            </div>
+                        </small></td>
                     </tr>
                 </thead>
                 <tbody>`
@@ -113,13 +225,13 @@ async function tabelaDeRelatorioCaixa() {
                     <td scope="col" class="text-danger"><small><strong>R$${(item.order.total).toFixed(2)}</strong></small></td>
                     <td scope="col">
                         <div class="custom-control custom-switch">
-                            <input type="checkbox" onclick="adicionarRemoverItemSelecionado(this.checked,'${item.order._id}')" class="custom-control-input custom-switch" id="selecionarOrder${item.order._id}">
+                            <input type="checkbox" onclick="this.checked? modalPorcentagemPesoDispesa('${item.order._id}'):adicionarRemoverItemSelecionado(false,'${item.order._id}')" class="custom-control-input custom-switch" id="selecionarOrder${item.order._id}">
                             <label class="custom-control-label" for="selecionarOrder${item.order._id}"></label>
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="8">
+                <tr class="table-light">
+                    <td colspan="9">
                         <div id="adddespesas${item.order._id}"></div>
                     </td>
                 </tr>`
@@ -154,19 +266,19 @@ async function tabelaGeralDeRelatorios() {
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Valor recebido bruto(Período)</h6>
-                            <h3 style="color:green">R$${json.data.total}</h3>
+                            <h3 style="color:green">R$ ${json.data.total}</h3>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Receitas menos custos(Período)</h6>
-                            <h3 style="color:green">R$${json.data.netValue}</h3>
+                            <h3 style="color:green">R$ ${json.data.netValue}</h3>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Gastos com cortesia(Período)</h6>
-                            <h3 style="color:red">R$${json.data.totalCourtesy}</h3>
+                            <h3 style="color:red">R$ ${json.data.totalCourtesy}</h3>
                         </div>
                     </div>
                 </div>
@@ -174,19 +286,19 @@ async function tabelaGeralDeRelatorios() {
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Taxas de cartão(Período)</h6>
-                            <h3 style="color:red">R$${json.data.totalCardFee}</h3>
+                            <h3 style="color:red">R$ ${json.data.totalCardFee}</h3>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Taxas de serviço/gorjeta(Período)</h6>
-                            <h3 style="color:green">R$${json.data.totalTip}</h3>
+                            <h3 style="color:green">R$ ${json.data.totalTip}</h3>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Custos com pedidos(Período)</h6>
-                            <h3 style="color:red">R$${json.data.totalCost}</h3>
+                            <h3 style="color:red">R$ ${json.data.totalCost}</h3>
                         </div>
                     </div>
                 </div>
@@ -194,13 +306,19 @@ async function tabelaGeralDeRelatorios() {
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Valor total em estoque(Total)</h6>
-                            <h3 style="color:red">R$${(json2.data).toFixed(2)}</h3>
+                            <h3 style="color:red">R$ ${(json2.data).toFixed(2)}</h3>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">Lucro Geral(Período)</h6>
-                            <h3 style="color:orange">R$${json.data.netValue}</h3>
+                            <h3 style="color:orange" id="valorTotalLucroGeral">R$ ${json.data.netValue}</h3>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Custo Geral(Período)</h6>
+                            <h3 style="color:orange" id="valorTotalCustoGeral">R$ ${json.data.totalCost}</h3>
                         </div>
                     </div>
                 </div>
