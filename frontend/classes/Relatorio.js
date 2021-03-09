@@ -31,19 +31,19 @@ function adicionarDispesaTodososPedidos(adicionar){
 //funcao responsavel por gerar o modal de porcetagem de peso sobre dispesa
 function modalPorcentagemPesoDispesa(identificador){
     let codigoHTML=`<div class="modal" id="modalPorcentagemDispesa">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><span class="fas fa-user-shield"></span> Adicionar Peso ao Pedido</h5>
+                    <h5 class="modal-title"><span class="fas fa-coins"></span> Adicionar peso ao pedido</h5>
                     <button type="button" class="close btn-outline-danger" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <h5>Porcentagem Disponível: ${PORCENTAGEMGLOBAL}%</h5>
-                    <input id="porcentagemDispesaPeso" type="number" class="form-control mb-2">
-                    <button onclick="if(document.getElementById('porcentagemDispesaPeso').value<=${PORCENTAGEMGLOBAL}){adicionarRemoverItemSelecionado(true,'${identificador}',document.getElementById('porcentagemDispesaPeso').value) }" type="button" data-dismiss="modal" class="btn btn-primary border border-dark col-md-3">
-                        <span class="fas fa-key"></span> Proximo
+                    <h5 class=${PORCENTAGEMGLOBAL>50? "text-success":"text-danger"}>Porcentagem Disponível: ${PORCENTAGEMGLOBAL}%</h5>
+                    <input id="porcentagemDispesaPeso" type="number" class="form-control mb-2" value=0>
+                    <button onclick="if(document.getElementById('porcentagemDispesaPeso').value<=${PORCENTAGEMGLOBAL}){adicionarRemoverItemSelecionado(true,'${identificador}',document.getElementById('porcentagemDispesaPeso').value) }" type="button" data-dismiss="modal" class="btn btn-primary border border-dark col-md-6">
+                        <span class="fas fa-chevron-right"></span> Proximo
                     </button>
                 </div>
             </div>
@@ -123,7 +123,7 @@ function exibirDispesas(){
             costTotalExtra+=iterator2.value;
             codigoHTML+=`<tr>
                             <td><small><strong>Referencia: ${iterator2.identification}</strong></small></td>
-                            <td class="text-danger"><small><strong>Valor: R$ ${(iterator2.value).toFixed(2)}</strong></small></td>
+                            <td class=${iterator2.value>0? "text-success":"text-danger"}><small><strong>Valor: R$ ${(iterator2.value).toFixed(2)}</strong></small></td>
                         </tr>`
         }
         let lucroUnitario = iterator.order.total+(iterator.order.tip? iterator.order.tip:0)-iterator.costTotal-(iterator.order.cardfee? iterator.order.cardfee:0)+costTotalExtra
@@ -139,7 +139,7 @@ function exibirDispesas(){
                 </tr>
                 <tr class="table-info">
                     <td><small><strong>Lucro do pedido</strong></small></td>
-                    <td class="text-danger"><small><strong>Valor: R$ ${(lucroUnitario).toFixed(2)}</strong></small></td>
+                    <td class=${lucroUnitario>0? "text-success":"text-danger"}><small><strong>Valor: R$ ${(lucroUnitario).toFixed(2)}</strong></small></td>
                 </tr>
             </table>`
         document.getElementById(`adddespesas${iterator.order._id}`).innerHTML = codigoHTML;
