@@ -223,6 +223,16 @@ function mostrarCamposIncorrreto(campo) {
     }
 }
 
+//funcao responsavel por controlar a ativação e desativação de um botão
+function ativaDesativaBotao(campo, tempo) {
+    for (let item of campo) {
+        document.getElementById(item).disabled = true;
+        setTimeout(function () {
+            document.getElementById(item).disabled = false;
+        }, tempo)
+    }
+}
+
 //funcao responsavel por gerar a tela de aguarde o carregamento
 let timerCarregador;
 function aguardeCarregamento(tipo) {
