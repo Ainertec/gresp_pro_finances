@@ -11,7 +11,7 @@ function ligacaoRelatorioCaixaFacede() {
     const situacao = autenticacaoLogin()
 
     if (JSON.parse(situacao).tipo == 'Administrador') {
-        telaRelatorioDeCaixa();
+        chamadaDeMetodosRelatorio();
     } else {
         mensagemDeErro('Usuário não autorizado!')
     }
@@ -56,7 +56,6 @@ function modalPorcentagemPesoDispesa(identificador){
 
 //function adicionar ou remover item selecionado
 function adicionarRemoverItemSelecionado(adicionar,identificador,porcentagem){
-    console.log(adicionar,identificador)
 
     porcentagem? PORCENTAGEMGLOBAL=PORCENTAGEMGLOBAL-porcentagem:null
 
@@ -69,40 +68,38 @@ function adicionarRemoverItemSelecionado(adicionar,identificador,porcentagem){
         }
         ORDERSSELECIONADOS=aux;
     }
-
-    for (const iterator of ORDERSSELECIONADOS) {
-        console.log(iterator)
-    }
 }
 
 //funcao responsavel por adicionar uma dispesa ao pedido
 function adicionarDispesaAoPedido(identificador,value){
 
-    let countPercentOrders = 0;
-    for (const iterator of ORDERSSELECIONADOS) {
-        iterator.percent==0? countPercentOrders++:null
-    }
-    for (const iterator of ORDERSSELECIONADOS) {
-        iterator.percent==0? iterator.percent=PORCENTAGEMGLOBAL/countPercentOrders:null;
-    }
+    if(ORDERSSELECIONADOS[0]!=null){
+        let countPercentOrders = 0;
+        for (const iterator of ORDERSSELECIONADOS) {
+            iterator.percent==0? countPercentOrders++:null
+        }
+        for (const iterator of ORDERSSELECIONADOS) {
+            iterator.percent==0? iterator.percent=PORCENTAGEMGLOBAL/countPercentOrders:null;
+        }
 
-    for (const iterator of TODASASORDERS) {
-        !iterator.order.dispesas? iterator.order.dispesas=[]:null
+        for (const iterator of TODASASORDERS) {
+            !iterator.order.dispesas? iterator.order.dispesas=[]:null
 
-        for (const iterator2 of ORDERSSELECIONADOS) {
-            if(iterator.order._id == iterator2._id){
-                iterator.order.dispesas.push({identification:identificador, value:value*iterator2.percent/100, percent:iterator2.percent});
+            for (const iterator2 of ORDERSSELECIONADOS) {
+                if(iterator.order._id == iterator2._id){
+                    iterator.order.dispesas.push({identification:identificador, value:value*iterator2.percent/100, percent:iterator2.percent});
+                }
             }
         }
-    }
 
-    for (const iterator of TODASASORDERS) {
-        console.log(iterator.order);
+        exibirDispesas();
+        zerarCheckeds();
+        calcularLucroGeral();
+        calcularCustoGeral();
+
+    }else{
+        mensagemDeErro('Selecione ao menos um pedido!')
     }
-    exibirDispesas();
-    zerarCheckeds();
-    calcularLucroGeral();
-    calcularCustoGeral();
 }
 
 //function para zerar todos os checkeds
@@ -113,6 +110,8 @@ function zerarCheckeds(){
         document.getElementById(`selecionarOrder${iterator._id}`).checked = false;
     }
     ORDERSSELECIONADOS=[];
+    document.getElementById('indetificadorDispesa').value='';
+    document.getElementById('valorDispesa').value='';
 }
 
 //funcao responsavel por exibir as dispesas
@@ -127,7 +126,7 @@ function exibirDispesas(){
                             <td class="text-danger"><small><strong>Valor: R$ ${(iterator2.value).toFixed(2)}</strong></small></td>
                         </tr>`
         }
-        let lucroUnitario = iterator.order.total+(iterator.order.tip? iterator.order.tip:0)-iterator.costTotal-(iterator.order.cardfee? iterator.order.cardfee:0)-costTotalExtra
+        let lucroUnitario = iterator.order.total+(iterator.order.tip? iterator.order.tip:0)-iterator.costTotal-(iterator.order.cardfee? iterator.order.cardfee:0)+costTotalExtra
         
 
         codigoHTML+=`<tr class="table-info">
@@ -136,7 +135,7 @@ function exibirDispesas(){
                 </tr>
                 <tr class="table-info">
                     <td><small><strong>Total gasto com pedido</strong></small></td>
-                    <td class="text-danger"><small><strong>Valor: R$ ${(iterator.costTotal+(iterator.order.cardfee? iterator.order.cardfee:0)+costTotalExtra).toFixed(2)}</strong></small></td>
+                    <td class="text-danger"><small><strong>Valor: R$ ${(iterator.costTotal+(iterator.order.cardfee? iterator.order.cardfee:0)-costTotalExtra).toFixed(2)}</strong></small></td>
                 </tr>
                 <tr class="table-info">
                     <td><small><strong>Lucro do pedido</strong></small></td>
@@ -155,7 +154,7 @@ function calcularLucroGeral(){
             costExtras+=iterator2.value;
         }
     }
-    document.getElementById('valorTotalLucroGeral').innerHTML = `R$ ${(TODASASINFORMACOES.netValue - costExtras).toFixed(2)}`;
+    document.getElementById('valorTotalLucroGeral').innerHTML = `R$ ${(parseFloat(TODASASINFORMACOES.netValue) + costExtras).toFixed(2)}`;
 }
 
 //funcao resṕonsavel por calcular o custo geral
@@ -166,7 +165,7 @@ function calcularCustoGeral(){
             costExtras+=iterator2.value;
         }
     }
-    document.getElementById('valorTotalCustoGeral').innerHTML = `R$ ${(parseFloat(TODASASINFORMACOES.totalCost) + costExtras).toFixed(2)}`;
+    document.getElementById('valorTotalCustoGeral').innerHTML = `R$ ${parseFloat(TODASASINFORMACOES.totalCost)-costExtras>=0? (parseFloat(TODASASINFORMACOES.totalCost) - costExtras).toFixed(2):'0.00'}`;
 }
 
 //funcao responsavel por chamar os metodos da classe relatorio

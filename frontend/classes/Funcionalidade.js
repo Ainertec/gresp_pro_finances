@@ -223,30 +223,6 @@ function mostrarCamposIncorrreto(campo) {
     }
 }
 
-//funcao de animacao slideUp
-function animacaoSlideUp(idReferencia) {
-    for (let item of idReferencia) {
-        $(item).slideUp(300)
-    }
-}
-
-//funcao animacao slideDown
-function animacaoSlideDown(idReferencia) {
-    for (let item of idReferencia) {
-        $(item).slideDown(300)
-    }
-}
-
-//funcao responsavel por controlar a ativação e desativação de um botão
-function ativaDesativaBotao(campo, tempo) {
-    for (let item of campo) {
-        document.getElementById(item).disabled = true;
-        setTimeout(function () {
-            document.getElementById(item).disabled = false;
-        }, tempo)
-    }
-}
-
 //funcao responsavel por gerar a tela de aguarde o carregamento
 let timerCarregador;
 function aguardeCarregamento(tipo) {

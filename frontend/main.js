@@ -5,12 +5,12 @@ const shell = electron.shell;
 
 home.on('ready', function () {
   let janelaPrincipal = new janela({
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     width: 1280,
     height: 720,
     alwaysOnTop: false,
     show: false,
-    title: 'Gresp Pro',
+    title: 'Gresp Pro Finances',
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
@@ -18,7 +18,6 @@ home.on('ready', function () {
       nodeIntegrationInSubFrames: true
     }
   });
-  //janelaPrincipal.on('close', () =>{janelaPrincipal=null; shell.openItem("C://gresppro-x64//executaveis_modulos//impressaoClose.vbs");})
   janelaPrincipal.loadURL(`file://${__dirname}/index.html`);
   janelaPrincipal.once('ready-to-show', () => {
     janelaPrincipal.show();
@@ -27,12 +26,5 @@ home.on('ready', function () {
 
   //shell.openItem("C://gresppro-x64//executaveis_modulos//startMongo.vbs")
   //shell.openItem("C://gresppro-x64//executaveis_modulos//startNode.vbs")
-  //shell.openItem("C://gresppro-x64//executaveis_modulos//impressao.vbs")
-  //shell.openItem("C://gresppro-x64//executaveis_modulos//startWeb.vbs")
 
-  var data = new Date();
-
-  if (data.getDate() == 5 || data.getDate() == 15 || data.getDate() == 25) {
-    //shell.openItem("C://gresppro-x64//executaveis_modulos//startBackup.vbs")
-  }
 });
