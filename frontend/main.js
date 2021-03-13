@@ -24,7 +24,8 @@ home.on('ready', function () {
     janelaPrincipal.maximize();
   });
 
-  //shell.openItem("C://gresppro-x64//executaveis_modulos//startMongo.vbs")
-  //shell.openItem("C://gresppro-x64//executaveis_modulos//startNode.vbs")
+  shell.openItem("C://grespprofinances-x64//executable//close.vbs")
+  shell.openItem("C://gresppro-x64//executaveis_modulos//startMongo.vbs")
+  shell.openItem("C://gresppro-x64//executaveis_modulos//startNode.vbs")
 
 });
