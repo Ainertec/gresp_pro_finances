@@ -20,8 +20,8 @@ function telaAutenticacao() {
                             <form class="text-center">
                                 <h1><span class="fas fa-user-circle"></span></h1>
                                 <div class="form-row col-7 rounded mx-auto d-block">
-                                    <input id="login" type="text" class="form-control mb-2 mousetrap" placeholder="Login">
-                                    <input id="senha" type="password" class="form-control mb-2 mousetrap" placeholder="Senha">
+                                    <input id="login" type="text" class="form-control mb-2" placeholder="Login">
+                                    <input id="senha" type="password" class="form-control mb-2" placeholder="Senha">
                                     <button onclick="if(validaDadosCampo(['#login','#senha'])){ativaDesativaBotao(['botaoefetuarlogin'],1000); efetuarLogin();}else{mensagemDeErro('Preencha todos os campos!'); mostrarCamposIncorrreto(['login','senha']);}" id="botaoefetuarlogin" type="button" class="btn btn-primary border border-dark col-md-3">
                                         <span class="fas fa-key"></span> Acessar
                                     </button>
@@ -37,8 +37,6 @@ function telaAutenticacao() {
 
     document.getElementById('modal').innerHTML = codigoHTML;
     $('#modaltelalogin').modal('show')
-
-    atalhosTeclaLogin();
 
 }
 
@@ -59,8 +57,8 @@ async function telaRecuperarSenha() {
             <div class="text-center" style="margin-top:10px;">
                 <div class="form-row col-5 rounded mx-auto d-block">
                     <label for="pergunta">Responda a pergunta de segurança: ${questao.data.question}</label>
-                    <input id="pergunta" type="text" class="form-control mb-2 mousetrap" placeholder="Resposta">
-                    <input id="novaSenha" type="password" class="form-control mb-2 mousetrap" placeholder="Digite uma nova senha">
+                    <input id="pergunta" type="text" class="form-control mb-2" placeholder="Resposta">
+                    <input id="novaSenha" type="password" class="form-control mb-2" placeholder="Digite uma nova senha">
                     <button onclick="if(validaDadosCampo(['#login','#pergunta','#novaSenha'])){recuperarSenha();}else{mensagemDeErro('Preencha os campos login, pergunta e nova senha!'); mostrarCamposIncorrreto(['login','pergunta','novaSenha']);}" type="button" class="btn btn-success border border-dark">
                         <span class="fas fa-user-lock"></span> Recuperar
                     </button>
